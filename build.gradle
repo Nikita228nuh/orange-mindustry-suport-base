@@ -1,0 +1,32 @@
+apply plugin: "java"
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url = "https://www.jitpack.io"
+    }
+}
+
+def mindustryVersion = "v159.7"
+
+dependencies {
+    compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+jar {
+    archiveFileName = "OrangeSupport1597.jar"
+
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
