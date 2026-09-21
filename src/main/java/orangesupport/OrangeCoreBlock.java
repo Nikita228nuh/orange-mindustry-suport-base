@@ -1,29 +1,11 @@
-package orangesupport;
+orangeCore = new OrangeCoreBlock("orange-core") {{
+    health = 1000;
+    itemCapacity = 1000000;
+    unitCapModifier = 50;
 
-import arc.util.Time;
-import mindustry.world.blocks.storage.CoreBlock;
+    size = 3;
 
-public class OrangeCoreBlock extends CoreBlock {
-
-    public OrangeCoreBlock(String name) {
-        super(name);
-        update = true;
-        health = 1000;
-        itemCapacity = 1000000;
-        unitCapModifier = 50;
-
-        buildType = OrangeCoreBuild::new;
-    }
-
-    public class OrangeCoreBuild extends CoreBuild {
-
-        @Override
-        public void updateTile() {
-            super.updateTile();
-
-            if (health < maxHealth) {
-                heal(10f * Time.delta / 60f);
-            }
-        }
-    }
-}
+    requirements = ItemStack.empty;
+    buildVisibility = BuildVisibility.shown;
+    alwaysUnlocked = true;
+}};
