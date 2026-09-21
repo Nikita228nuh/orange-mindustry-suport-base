@@ -1,14 +1,16 @@
-apply plugin: "java"
+plugins {
+    id 'java'
+}
 
 repositories {
     mavenCentral()
 
     maven {
-        url = "https://www.jitpack.io"
+        url = 'https://www.jitpack.io'
     }
 }
 
-def mindustryVersion = "v159.7"
+def mindustryVersion = 'v159.7'
 
 dependencies {
     compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
@@ -20,13 +22,9 @@ java {
 }
 
 jar {
-    archiveFileName = "OrangeSupport1597.jar"
+    archiveFileName = 'OrangeSupport1597.jar'
 
-    from {
-        configurations.runtimeClasspath.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
+    from(sourceSets.main.output)
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
