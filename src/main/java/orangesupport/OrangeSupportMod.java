@@ -1,8 +1,6 @@
 package orangesupport;
 
 import arc.graphics.Color;
-import mindustry.content.Blocks;
-import mindustry.content.TechTree;
 import mindustry.entities.abilities.ForceFieldAbility;
 import mindustry.gen.UnitEntity;
 import mindustry.mod.Mod;
@@ -19,7 +17,6 @@ public class OrangeSupportMod extends Mod {
     @Override
     public void loadContent() {
 
-        // Orange player-controlled support unit.
         orangeSupport = new UnitType("orange-support") {{
             constructor = UnitEntity::create;
 
@@ -45,11 +42,12 @@ public class OrangeSupportMod extends Mod {
 
             itemCapacity = 1000000;
 
-            // FREE research.
-            researchCostMultiplier = 0f;
-
             outlineColor = Color.valueOf("ff7a00");
 
+            // Free research.
+            researchCostMultiplier = 0f;
+
+            // Large shield.
             abilities.add(new ForceFieldAbility(
                 80f,
                 1666.6667f,
@@ -57,34 +55,28 @@ public class OrangeSupportMod extends Mod {
                 360f
             ));
 
+            // Repairs nearby friendly units/buildings.
             abilities.add(new OrangeRepairFieldAbility(100f, 80f));
+
+            // Make unit immediately available.
+            hidden = false;
         }};
 
-        // Orange Core.
         orangeCore = new OrangeCoreBlock("orange-core") {{
+            size = 3;
+
             health = 1000;
             itemCapacity = 1000000;
             unitCapModifier = 50;
 
-            // FREE to place.
+            // Completely free to build.
             requirements = ItemStack.empty;
 
+            // Show in build menu.
             buildVisibility = BuildVisibility.shown;
+
+            // No research required.
             alwaysUnlocked = true;
-
-            size = 3;
         }};
-    }
-
-    @Override
-    public void init() {
-        super.init();
-
-        // Put both items into the Serpulo tech tree.
-        TechTree.node(Blocks.coreShard, () -> {
-            TechTree.node(orangeCore, ItemStack.empty, () -> {
-                TechTree.node(orangeSupport, ItemStack.empty, () -> {});
-            });
-        });
     }
 }
