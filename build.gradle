@@ -26,5 +26,13 @@ jar {
 
     from(sourceSets.main.output)
 
+    // Put mod.json INSIDE the JAR.
+    from('mod.json')
+
+    // Include the mod's assets.
+    from('assets') {
+        into 'assets'
+    }
+
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
