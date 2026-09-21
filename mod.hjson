@@ -1,0 +1,7 @@
+displayName: "Orange Support Base"
+description: "A non-attacking player-controlled orange support unit and orange core for Mindustry v8 Build 159.7."
+version: "1.0"
+minGameVersion: "159.7"
+author: "Custom"
+java: true
+main: "orangesupport.OrangeSupportMod"
