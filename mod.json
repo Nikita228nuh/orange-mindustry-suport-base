@@ -1,0 +1,9 @@
+{
+  "displayName": "Orange Support",
+  "description": "Adds the Orange Support unit and Orange Core.",
+  "version": "1.0",
+  "minGameVersion": "159.7",
+  "author": "Custom",
+  "java": true,
+  "main": "orangesupport.OrangeSupportMod"
+}
