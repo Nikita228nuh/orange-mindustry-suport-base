@@ -1,6 +1,8 @@
 package orangesupport;
 
 import arc.graphics.Color;
+import mindustry.content.Blocks;
+import mindustry.content.TechTree;
 import mindustry.entities.abilities.ForceFieldAbility;
 import mindustry.gen.UnitEntity;
 import mindustry.mod.Mod;
@@ -20,7 +22,7 @@ public class OrangeSupportMod extends Mod {
         orangeSupport = new UnitType("orange-support") {{
             constructor = UnitEntity::create;
 
-            speed = 60f / 8f;
+            speed = 7.5f;
             health = 100000f;
             hitSize = 10f;
 
@@ -30,6 +32,7 @@ public class OrangeSupportMod extends Mod {
             canAttack = false;
             targetAir = false;
             targetGround = false;
+            weapons.clear();
 
             buildSpeed = 1000f;
             buildRange = 80f;
@@ -42,12 +45,10 @@ public class OrangeSupportMod extends Mod {
 
             itemCapacity = 1000000;
 
-            outlineColor = Color.valueOf("ff7a00");
-
-            // Free research.
             researchCostMultiplier = 0f;
 
-            // Large shield.
+            outlineColor = Color.valueOf("ff7a00");
+
             abilities.add(new ForceFieldAbility(
                 80f,
                 1666.6667f,
@@ -55,28 +56,30 @@ public class OrangeSupportMod extends Mod {
                 360f
             ));
 
-            // Repairs nearby friendly units/buildings.
-            abilities.add(new OrangeRepairFieldAbility(100f, 80f));
-
-            // Make unit immediately available.
-            hidden = false;
+            abilities.add(
+                new OrangeRepairFieldAbility(100f, 80f)
+            );
         }};
 
         orangeCore = new OrangeCoreBlock("orange-core") {{
             size = 3;
-
             health = 1000;
             itemCapacity = 1000000;
             unitCapModifier = 50;
 
-            // Completely free to build.
             requirements = ItemStack.empty;
-
-            // Show in build menu.
             buildVisibility = BuildVisibility.shown;
-
-            // No research required.
-            alwaysUnlocked = true;
         }};
+
+        // Put the Orange Core into the Serpulo tech tree.
+        TechTree.node(Blocks.coreShard, () -> {
+
+            TechTree.node(orangeCore, ItemStack.empty, () -> {
+
+                // Orange unit is under the Orange Core.
+                TechTree.node(orangeSupport, ItemStack.empty, () -> {});
+
+            });
+        });
     }
 }
