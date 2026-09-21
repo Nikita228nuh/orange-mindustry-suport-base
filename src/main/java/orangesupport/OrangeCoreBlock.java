@@ -1,6 +1,8 @@
 package orangesupport;
 
 import arc.util.Time;
+import mindustry.game.Team;
+import mindustry.world.Tile;
 import mindustry.world.blocks.storage.CoreBlock;
 
 public class OrangeCoreBlock extends CoreBlock {
@@ -12,12 +14,15 @@ public class OrangeCoreBlock extends CoreBlock {
         itemCapacity = 1000000;
         unitCapModifier = 50;
 
-        // 3 x 3 core
         size = 3;
-
         update = true;
 
         buildType = OrangeCoreBuild::new;
+    }
+
+    @Override
+    public boolean canPlaceOn(Tile tile, Team team, int rotation) {
+        return tile != null;
     }
 
     public class OrangeCoreBuild extends CoreBuild {
@@ -26,7 +31,7 @@ public class OrangeCoreBlock extends CoreBlock {
         public void updateTile() {
             super.updateTile();
 
-            // Regenerate 10 HP per second.
+            // 10 HP per second regeneration.
             if (health < maxHealth) {
                 heal(10f * Time.delta / 60f);
             }
