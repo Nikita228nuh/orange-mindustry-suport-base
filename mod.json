@@ -1,9 +1,9 @@
 {
+  "name": "orange-mindustry-support-base",
   "displayName": "Orange Support",
-  "description": "Adds the Orange Support unit and Orange Core.",
+  "author": "Nikita",
+  "description": "Orange support unit and core.",
   "version": "1.0",
   "minGameVersion": "159.7",
-  "author": "Custom",
-  "java": true,
   "main": "orangesupport.OrangeSupportMod"
 }
