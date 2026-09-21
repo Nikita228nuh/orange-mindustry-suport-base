@@ -29,3 +29,21 @@ public class OrangeRepairFieldAbility extends Ability {
             range,
             other -> {
                 if (other != unit && other.damaged()) {
+                    other.heal(heal);
+                }
+            }
+        );
+
+        // Repair nearby friendly buildings.
+        indexer.allBuildings(
+            unit.x,
+            unit.y,
+            range,
+            building -> {
+                if (building.team == unit.team && building.damaged()) {
+                    building.heal(heal);
+                }
+            }
+        );
+    }
+}
