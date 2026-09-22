@@ -1,9 +1,10 @@
 {
-  "name": "orange-mindustry-support-base",
-  "displayName": "Orange Support",
+  "name": "orange-mindustry-support",
+  "displayName": "Orange Mindustry Support",
   "author": "Nikita",
-  "description": "Orange support unit and core.",
+  "description": "Orange support core and unit",
   "version": "1.0",
   "minGameVersion": "159.7",
+  "java": true,
   "main": "orangesupport.OrangeSupportMod"
 }
