@@ -1,13 +1,10 @@
 package orangesupport;
 
-import mindustry.content.ContentList;
-
-public class OrangeBlocks implements ContentList {
+public class OrangeBlocks {
 
     public static OrangeCoreBlock orangeCore;
 
-    @Override
-    public void load() {
+    public static void load() {
         orangeCore = new OrangeCoreBlock("orange-core");
     }
 }
