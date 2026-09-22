@@ -33,7 +33,7 @@ java {
 }
 
 dependencies {
-    compileOnly 'Anuken:Mindustry:v159.7'
+    compileOnly 'Anuken:Mindustry:v160.5'
 }
 
 jar {
