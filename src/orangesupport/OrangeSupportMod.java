@@ -6,6 +6,7 @@ public class OrangeSupportMod extends Mod {
 
     @Override
     public void loadContent() {
+        OrangeUnits.load();
         OrangeBlocks.load();
     }
 }
