@@ -11,11 +11,11 @@ public class OrangeCoreBlock extends CoreBlock {
         size = 3;
         health = 5000;
 
-        // No custom healing here.
-        // The normal Mindustry CoreBlock handles core behavior.
-
-        unitType = OrangeUnits.orangeSupport;
+        itemCapacity = 1000000;
+        unitCapModifier = 50;
 
         requirements = ItemStack.empty;
+
+        unitType = OrangeUnits.orangeSupport;
     }
 }
