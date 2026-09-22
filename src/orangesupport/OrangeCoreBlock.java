@@ -7,10 +7,14 @@ public class OrangeCoreBlock extends CoreBlock {
     public OrangeCoreBlock(String name) {
         super(name);
 
-        // Custom stats
+        // Core properties
+        size = 3;
         health = 1000;
         itemCapacity = 1000000;
         unitCapModifier = 50;
-        size = 3;
+
+        // Make it available for building.
+        requirements = new mindustry.type.ItemStack[0];
+        buildVisibility = BuildVisibility.shown;
     }
 }
