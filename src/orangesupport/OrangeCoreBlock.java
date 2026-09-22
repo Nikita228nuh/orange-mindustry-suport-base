@@ -16,6 +16,7 @@ public class OrangeCoreBlock extends CoreBlock {
 
         requirements = ItemStack.empty;
 
+        // The Orange Core produces the Orange Support Unit.
         unitType = OrangeUnits.orangeSupport;
     }
 }
