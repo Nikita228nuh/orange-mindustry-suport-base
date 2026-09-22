@@ -4,7 +4,7 @@
   "author": "Nikita",
   "description": "Orange support core and unit",
   "version": "1.0",
-  "minGameVersion": "159.7",
+  "minGameVersion": "160.5",
   "java": true,
   "main": "orangesupport.OrangeSupportMod"
 }
