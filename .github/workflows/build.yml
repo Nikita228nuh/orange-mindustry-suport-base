@@ -19,7 +19,7 @@ jobs:
 
       - name: Build mod
         run: |
-          gradle clean dex --stacktrace
+          gradle clean jar --stacktrace
 
       - name: Show built files
         run: |
