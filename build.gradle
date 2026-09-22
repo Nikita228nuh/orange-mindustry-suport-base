@@ -53,8 +53,9 @@ tasks.register("jarAndroid") {
             throw new GradleException("ANDROID_HOME/ANDROID_SDK_ROOT not found.")
         }
 
-        def sdk = file(sdkRoot)
+        def sdk = new File(sdkRoot)
 
+        // Find Android platform
         def platforms = fileTree(new File(sdk, "platforms")) {
             include "*/android.jar"
         }.files.sort().reverse()
@@ -65,7 +66,8 @@ tasks.register("jarAndroid") {
 
         def androidJar = platforms.first()
 
-        def buildToolsDirs = file(sdk, "build-tools").listFiles()
+        // Find D8
+        def buildToolsDirs = new File(sdk, "build-tools").listFiles()
             ?.findAll { new File(it, "d8").exists() }
             ?.sort { a, b -> b.name <=> a.name }
 
@@ -82,6 +84,11 @@ tasks.register("jarAndroid") {
         delete dexDir
         delete androidJarOutput
         mkdir dexDir
+
+        println "Android SDK: $sdk"
+        println "Android platform: $androidJar"
+        println "D8: $d8"
+        println "Desktop JAR: $desktopJar"
 
         exec {
             executable d8.absolutePath
