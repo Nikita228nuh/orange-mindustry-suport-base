@@ -19,7 +19,7 @@ repositories {
     ivy {
         url = 'https://github.com/'
         patternLayout {
-            artifact '/Anuken/Mindustry/releases/download/v159.7/dependencies.jar'
+            artifact '/Anuken/Mindustry/releases/download/v160.5/dependencies.jar'
         }
         metadataSources {
             artifact()
