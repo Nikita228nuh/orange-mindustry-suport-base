@@ -1,19 +1,39 @@
-plugins {
-    id 'java'
-}
+apply plugin: "java"
+
+sourceSets.main.java.srcDirs = ["src"]
 
 repositories {
     mavenCentral()
 
-    maven {
-        url = 'https://www.jitpack.io'
+    ivy {
+        url = "https://github.com/"
+        patternLayout {
+            artifact "/[organisation]/[module]/releases/download/[revision]/dependencies.jar"
+        }
+        metadataSources {
+            artifact()
+        }
     }
-}
 
-def mindustryVersion = 'v159.7'
+    ivy {
+        url = "https://github.com/"
+        patternLayout {
+            artifact "/[organisation]/[module]/releases/[revision]/download/dependencies.jar"
+        }
+        metadataSources {
+            artifact()
+        }
+    }
 
-dependencies {
-    compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
+    ivy {
+        url = "https://github.com/"
+        patternLayout {
+            artifact "/[organisation]/[module]/releases/download/master/[revision].jar"
+        }
+        metadataSources {
+            artifact()
+        }
+    }
 }
 
 java {
@@ -21,18 +41,27 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
+ext {
+    mindustryVersion = "v159.7"
+}
+
+dependencies {
+    compileOnly "Anuken:Mindustry:$mindustryVersion"
+}
+
 jar {
-    archiveFileName = 'OrangeSupport1597.jar'
+    archiveFileName = "${project.name}.jar"
 
-    from(sourceSets.main.output)
+    // Put compiled Java classes into the JAR
+    from sourceSets.main.output
 
-    // Put mod.json INSIDE the JAR.
-    from('mod.json')
-
-    // Include the mod's assets.
-    from('assets') {
-        into 'assets'
+    // Include mod.json at the ROOT
+    from(rootDir) {
+        include "mod.json"
     }
 
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    // Include all PNGs/assets
+    from("assets") {
+        into "assets"
+    }
 }
