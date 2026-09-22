@@ -1,88 +1,34 @@
+
+
 package orangesupport;
 
 import arc.graphics.Color;
-import mindustry.content.TechTree;
-import mindustry.entities.abilities.ForceFieldAbility;
-import mindustry.gen.UnitEntity;
 import mindustry.mod.Mod;
 import mindustry.type.Category;
 import mindustry.type.ItemStack;
-import mindustry.type.UnitType;
 import mindustry.world.Block;
 import mindustry.world.meta.BuildVisibility;
 
 public class OrangeSupportMod extends Mod {
 
-    public static UnitType orangeSupport;
     public static Block orangeCore;
 
     @Override
     public void loadContent() {
 
-        orangeSupport = new UnitType("orange-support") {{
-            constructor = UnitEntity::create;
-
-            health = 100000f;
-            speed = 7.5f;
-            hitSize = 10f;
-
-            playerControllable = true;
-            logicControllable = true;
-
-            canAttack = false;
-            targetAir = false;
-            targetGround = false;
-
-            buildSpeed = 1000f;
-            buildRange = 80f;
-
-            mineSpeed = 1000f;
-            mineTier = 999;
-            mineRange = 80f;
-            mineWalls = true;
-            mineFloor = true;
-
-            itemCapacity = 1000000;
-
-            researchCostMultiplier = 0f;
-
-            outlineColor = Color.valueOf("ff7a00");
-
-            abilities.add(new ForceFieldAbility(
-                80f,
-                1666.6667f,
-                1000000f,
-                360f
-            ));
-
-            abilities.add(
-                new OrangeRepairFieldAbility(100f, 80f)
-            );
-
-            alwaysUnlocked = true;
-        }};
-
-        orangeCore = new OrangeCoreBlock("orange-core") {{
+        orangeCore = new Block("orange-core") {{
             size = 3;
-
             health = 1000;
-            itemCapacity = 1000000;
-            unitCapModifier = 50;
 
             requirements = ItemStack.empty;
 
-            buildVisibility = BuildVisibility.shown;
-
             category = Category.units;
+            buildVisibility = BuildVisibility.shown;
 
             alwaysUnlocked = true;
 
-            unitType = orangeSupport;
+            update = true;
         }};
-
-        TechTree.node(orangeCore, ItemStack.empty, () -> {
-            TechTree.node(orangeSupport, ItemStack.empty, () -> {});
-        });
     }
 }
 
