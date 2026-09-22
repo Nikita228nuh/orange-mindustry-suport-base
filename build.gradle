@@ -1,37 +1,31 @@
-apply plugin: "java"
+plugins {
+    id 'java'
+}
 
-sourceSets.main.java.srcDirs = ["src"]
+group = 'orangesupport'
+version = '1.0'
 
 repositories {
     mavenCentral()
 
     ivy {
-        url = "https://github.com/"
+        url = "https://github.com"
         patternLayout {
-            artifact "/[organisation]/[module]/releases/download/[revision]/dependencies.jar"
+            artifact "/Anuken/Mindustry/releases/download/v159.7/dependencies.jar"
         }
         metadataSources {
             artifact()
         }
     }
+}
 
-    ivy {
-        url = "https://github.com/"
-        patternLayout {
-            artifact "/[organisation]/[module]/releases/[revision]/download/dependencies.jar"
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
         }
-        metadataSources {
-            artifact()
-        }
-    }
-
-    ivy {
-        url = "https://github.com/"
-        patternLayout {
-            artifact "/[organisation]/[module]/releases/download/master/[revision].jar"
-        }
-        metadataSources {
-            artifact()
+        resources {
+            srcDirs = ['src/main/resources', 'assets']
         }
     }
 }
@@ -41,26 +35,22 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-ext {
-    mindustryVersion = "v159.7"
-}
-
 dependencies {
-    compileOnly "Anuken:Mindustry:$mindustryVersion"
+    compileOnly files("dependencies.jar")
 }
 
 jar {
-    archiveFileName = "${project.name}.jar"
+    archiveFileName = "OrangeSupport159.jar"
 
-    // Put compiled Java classes into the JAR
+    // Java .class files
     from sourceSets.main.output
 
-    // Include mod.json at the ROOT
-    from(rootDir) {
+    // mod.json at JAR root
+    from(".") {
         include "mod.json"
     }
 
-    // Include all PNGs/assets
+    // PNG/assets
     from("assets") {
         into "assets"
     }
