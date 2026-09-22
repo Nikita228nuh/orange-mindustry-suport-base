@@ -10,24 +10,27 @@ public class OrangeUnits {
 
         orangeSupport = new UnitType("orange-support");
 
-        // Basic unit stats
+        // Basic stats
         orangeSupport.health = 300f;
-        orangeSupport.speed = 0.6f;
+        orangeSupport.speed = 3.0f;
         orangeSupport.hitSize = 8f;
 
-        // Can build
+        // Make the unit fly
+        orangeSupport.flying = true;
+
+        // Building
         orangeSupport.buildSpeed = 1f;
         orangeSupport.buildRange = 120f;
 
-        // Can mine
+        // Mining
         orangeSupport.mineTier = 1;
         orangeSupport.mineSpeed = 2f;
 
-        // Repair nearby friendly units/buildings
+        // Support/healing ability
         orangeSupport.abilities.add(
             new OrangeRepairFieldAbility(
-                20f,  // healing per second
-                80f   // range
+                20f,
+                80f
             )
         );
     }
