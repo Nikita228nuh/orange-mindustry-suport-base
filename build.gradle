@@ -29,96 +29,88 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-tasks.register("jarAndroid") {
-    dependsOn "jar"
-
-    doLast {
-        def sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
-
-        if (!sdkRoot || !new File(sdkRoot).exists()) {
-            throw new GradleException("No Android SDK found.")
-        }
-
-        def platformRoot = new File("$sdkRoot/platforms/")
-            .listFiles()
-            .findAll { new File(it, "android.jar").exists() }
-            .sort()
-            .reverse()
-            .find { true }
-
-        if (!platformRoot) {
-            throw new GradleException("No Android platform found.")
-        }
-
-        def buildTools = new File("$sdkRoot/build-tools")
-            .listFiles()
-            .findAll { new File(it, "d8").exists() }
-            .sort()
-            .reverse()
-            .find { true }
-
-        if (!buildTools) {
-            throw new GradleException("No Android build-tools/d8 found.")
-        }
-
-        def classpath = (
-            configurations.compileClasspath.asList() +
-            [new File(platformRoot, "android.jar")]
-        ).collect {
-            "--classpath \"$it.path\""
-        }.join(" ")
-
-        def d8 = new File(buildTools, "d8").absolutePath
-
-        def command =
-            "\"$d8\" $classpath " +
-            "--min-api 21 " +
-            "--output build/libs/OrangeSupportAndroid.jar " +
-            "build/libs/OrangeSupport160Desktop.jar"
-
-        println command
-
-        def process = command.execute(null, project.file("build/libs"))
-        process.waitForProcessOutput(System.out, System.err)
-
-        if (process.exitValue() != 0) {
-            throw new GradleException("D8 failed.")
-        }
-    }
-}
-
 jar {
     archiveFileName = "OrangeSupport160Desktop.jar"
 
-    from {
-        configurations.runtimeClasspath.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
+    from(sourceSets.main.output)
 
     from(projectDir) {
         include "mod.json"
     }
 
     from("assets") {
-        include "**"
+        into "assets"
+    }
+}
+
+tasks.register("jarAndroid") {
+    dependsOn("jar")
+
+    doLast {
+        def sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
+
+        if (!sdkRoot) {
+            throw new GradleException("ANDROID_HOME/ANDROID_SDK_ROOT not found.")
+        }
+
+        def sdk = file(sdkRoot)
+
+        def platforms = fileTree(new File(sdk, "platforms")) {
+            include "*/android.jar"
+        }.files.sort().reverse()
+
+        if (platforms.isEmpty()) {
+            throw new GradleException("No Android platform with android.jar found.")
+        }
+
+        def androidJar = platforms.first()
+
+        def buildToolsDirs = file(sdk, "build-tools").listFiles()
+            ?.findAll { new File(it, "d8").exists() }
+            ?.sort { a, b -> b.name <=> a.name }
+
+        if (!buildToolsDirs || buildToolsDirs.isEmpty()) {
+            throw new GradleException("No Android build-tools with d8 found.")
+        }
+
+        def d8 = new File(buildToolsDirs.first(), "d8")
+
+        def desktopJar = file("$buildDir/libs/OrangeSupport160Desktop.jar")
+        def dexDir = file("$buildDir/dex")
+        def androidJarOutput = file("$buildDir/libs/OrangeSupport160Android.jar")
+
+        delete dexDir
+        delete androidJarOutput
+        mkdir dexDir
+
+        exec {
+            executable d8.absolutePath
+
+            args "--min-api", "21"
+            args "--lib", androidJar.absolutePath
+            args "--output", dexDir.absolutePath
+            args desktopJar.absolutePath
+        }
+
+        ant.jar(
+            destfile: androidJarOutput,
+            basedir: dexDir
+        )
+
+        println "Created Android JAR: $androidJarOutput"
     }
 }
 
 tasks.register("deploy", Jar) {
-    dependsOn "jarAndroid"
-    dependsOn "jar"
+    dependsOn("jarAndroid")
 
     archiveFileName = "OrangeSupport160.jar"
 
     from {
-        [
-            zipTree("build/libs/OrangeSupport160Desktop.jar"),
-            zipTree("build/libs/OrangeSupportAndroid.jar")
-        ]
+        zipTree(file("$buildDir/libs/OrangeSupport160Desktop.jar"))
     }
 
-    doLast {
-        delete "build/libs/OrangeSupport160Android.jar"
+    from {
+        zipTree(file("$buildDir/libs/OrangeSupport160Android.jar"))
     }
 }
