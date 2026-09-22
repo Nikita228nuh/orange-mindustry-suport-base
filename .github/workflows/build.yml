@@ -17,6 +17,13 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android build tools
+        run: |
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
       - name: Build mod
         run: |
           gradle clean deploy --stacktrace
@@ -24,11 +31,11 @@ jobs:
       - name: Show built files
         run: |
           echo "Files created:"
-          find build -type f -name "*.jar" -print
+          find build/libs -type f -name "*.jar" -print
 
       - name: Upload mod
-  uses: actions/upload-artifact@v4
-  with:
-    name: OrangeSupport160
-    path: build/libs/OrangeSupport160.jar
-    if-no-files-found: error
+        uses: actions/upload-artifact@v4
+        with:
+          name: OrangeSupport160
+          path: build/libs/OrangeSupport160.jar
+          if-no-files-found: error
