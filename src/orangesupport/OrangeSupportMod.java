@@ -4,12 +4,10 @@ import mindustry.mod.Mod;
 
 public class OrangeSupportMod extends Mod {
 
-    public OrangeSupportMod() {
-        // Empty constructor
-    }
+    public static OrangeCoreBlock orangeCore;
 
     @Override
     public void loadContent() {
-        // Empty for testing
+        orangeCore = new OrangeCoreBlock("orange-core");
     }
 }
