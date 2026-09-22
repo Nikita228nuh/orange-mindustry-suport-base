@@ -1,16 +1,12 @@
 package orangesupport;
 
-import mindustry.world.meta.BuildVisibility;
-import mindustry.world.meta.Category;
+import mindustry.world.Block;
 
 public class OrangeBlocks {
 
-    public static OrangeCoreBlock orangeCore;
+    public static Block orangeCore;
 
     public static void load() {
         orangeCore = new OrangeCoreBlock("orange-core");
-
-        orangeCore.category = Category.effect;
-        orangeCore.buildVisibility = BuildVisibility.shown;
     }
 }
