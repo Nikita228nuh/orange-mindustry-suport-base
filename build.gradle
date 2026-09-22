@@ -90,7 +90,8 @@ tasks.register("jarAndroid") {
         println "D8: $d8"
         println "Desktop JAR: $desktopJar"
 
-        exec {
+        // Run D8
+        project.exec {
             executable d8.absolutePath
 
             args "--min-api", "21"
@@ -99,6 +100,7 @@ tasks.register("jarAndroid") {
             args desktopJar.absolutePath
         }
 
+        // Put classes.dex into the Android JAR
         ant.jar(
             destfile: androidJarOutput,
             basedir: dexDir
