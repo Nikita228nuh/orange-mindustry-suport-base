@@ -9,10 +9,13 @@ public class OrangeCoreBlock extends CoreBlock {
 
         size = 3;
         health = 1000;
+
         itemCapacity = 1000000;
         unitCapModifier = 50;
 
-        // Free to place for testing.
         requirements = new mindustry.type.ItemStack[0];
+
+        // Make it available for building.
+        buildVisibility = mindustry.world.meta.BuildVisibility.shown;
     }
 }
