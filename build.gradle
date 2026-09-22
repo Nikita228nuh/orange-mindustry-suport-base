@@ -37,7 +37,7 @@ dependencies {
 }
 
 jar {
-    archiveFileName = 'OrangeSupport159.jar'
+    archiveFileName = 'OrangeSupport160.jar'
 
     // THIS puts the compiled Java classes into the JAR
     from sourceSets.main.output
