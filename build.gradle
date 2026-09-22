@@ -29,97 +29,161 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
+/*
+ * Desktop JAR
+ */
 jar {
     archiveFileName = "OrangeSupport160Desktop.jar"
 
-    from(sourceSets.main.output)
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
 
     from(projectDir) {
         include "mod.json"
     }
 
     from("assets") {
-        into "assets"
+        include "**"
     }
 }
 
+/*
+ * Build Android-compatible JAR
+ */
 tasks.register("jarAndroid") {
     dependsOn("jar")
 
     doLast {
-        def sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
+        def sdkRoot = System.getenv("ANDROID_HOME")
 
         if (!sdkRoot) {
-            throw new GradleException("ANDROID_HOME/ANDROID_SDK_ROOT not found.")
+            sdkRoot = System.getenv("ANDROID_SDK_ROOT")
+        }
+
+        if (!sdkRoot) {
+            throw new GradleException("ANDROID_HOME / ANDROID_SDK_ROOT not found.")
         }
 
         def sdk = new File(sdkRoot)
 
-        // Find Android platform
-        def platforms = fileTree(new File(sdk, "platforms")) {
-            include "*/android.jar"
-        }.files.sort().reverse()
-
-        if (platforms.isEmpty()) {
-            throw new GradleException("No Android platform with android.jar found.")
+        if (!sdk.exists()) {
+            throw new GradleException("Android SDK not found: ${sdk.absolutePath}")
         }
 
-        def androidJar = platforms.first()
+        /*
+         * Find android.jar
+         */
+        def platformsDir = new File(sdk, "platforms")
 
-        // Find D8
-        def buildToolsDirs = new File(sdk, "build-tools").listFiles()
-            ?.findAll { new File(it, "d8").exists() }
+        def platformRoot = platformsDir.listFiles()
+            ?.findAll { new File(it, "android.jar").isFile() }
             ?.sort { a, b -> b.name <=> a.name }
+            ?.find { true }
 
-        if (!buildToolsDirs || buildToolsDirs.isEmpty()) {
-            throw new GradleException("No Android build-tools with d8 found.")
+        if (!platformRoot) {
+            throw new GradleException(
+                "No Android platform with android.jar found."
+            )
         }
 
-        def d8 = new File(buildToolsDirs.first(), "d8")
+        /*
+         * Find D8
+         */
+        def buildToolsDir = new File(sdk, "build-tools")
 
-        def desktopJar = file("$buildDir/libs/OrangeSupport160Desktop.jar")
-        def dexDir = file("$buildDir/dex")
-        def androidJarOutput = file("$buildDir/libs/OrangeSupport160Android.jar")
+        def buildTools = buildToolsDir.listFiles()
+            ?.findAll { new File(it, "d8").isFile() }
+            ?.sort { a, b -> b.name <=> a.name }
+            ?.find { true }
 
-        delete dexDir
-        delete androidJarOutput
-        mkdir dexDir
-
-        println "Android SDK: $sdk"
-        println "Android platform: $androidJar"
-        println "D8: $d8"
-        println "Desktop JAR: $desktopJar"
-
-        // Run D8
-        project.exec {
-            executable d8.absolutePath
-
-            args "--min-api", "21"
-            args "--lib", androidJar.absolutePath
-            args "--output", dexDir.absolutePath
-            args desktopJar.absolutePath
+        if (!buildTools) {
+            throw new GradleException(
+                "No Android build-tools with d8 found."
+            )
         }
 
-        // Put classes.dex into the Android JAR
-        ant.jar(
-            destfile: androidJarOutput,
-            basedir: dexDir
+        def d8 = new File(buildTools, "d8")
+        def androidJar = new File(platformRoot, "android.jar")
+
+        def desktopJar = file(
+            "build/libs/OrangeSupport160Desktop.jar"
         )
 
-        println "Created Android JAR: $androidJarOutput"
+        def androidJarOutput = file(
+            "build/libs/OrangeSupportAndroid.jar"
+        )
+
+        println "Android SDK: ${sdk.absolutePath}"
+        println "Android platform: ${androidJar.absolutePath}"
+        println "D8: ${d8.absolutePath}"
+        println "Desktop JAR: ${desktopJar.absolutePath}"
+
+        /*
+         * Make sure output directory exists
+         */
+        androidJarOutput.parentFile.mkdirs()
+
+        /*
+         * Run D8 using ProcessBuilder.
+         */
+        def command = [
+            d8.absolutePath,
+            "--classpath",
+            androidJar.absolutePath,
+            "--min-api",
+            "21",
+            "--output",
+            androidJarOutput.absolutePath,
+            desktopJar.absolutePath
+        ]
+
+        println "Running D8..."
+
+        def process = new ProcessBuilder(command)
+            .redirectErrorStream(true)
+            .start()
+
+        process.inputStream.eachLine { line ->
+            println line
+        }
+
+        def exitCode = process.waitFor()
+
+        if (exitCode != 0) {
+            throw new GradleException(
+                "D8 failed with exit code ${exitCode}."
+            )
+        }
+
+        println "Android JAR created successfully:"
+        println androidJarOutput.absolutePath
     }
 }
 
+/*
+ * Final Mindustry mod JAR
+ */
 tasks.register("deploy", Jar) {
     dependsOn("jarAndroid")
 
     archiveFileName = "OrangeSupport160.jar"
 
     from {
-        zipTree(file("$buildDir/libs/OrangeSupport160Desktop.jar"))
+        zipTree("build/libs/OrangeSupport160Desktop.jar")
     }
 
     from {
-        zipTree(file("$buildDir/libs/OrangeSupport160Android.jar"))
+        zipTree("build/libs/OrangeSupportAndroid.jar")
+    }
+
+    doLast {
+        println ""
+        println "========================================"
+        println "OrangeSupport160.jar created!"
+        println "========================================"
+        println archiveFile.get().asFile.absolutePath
     }
 }
