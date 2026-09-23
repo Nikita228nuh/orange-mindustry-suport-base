@@ -47,8 +47,6 @@ public class OrangeSupportMod extends Mod {
         autoFiller.health = 100000;
 
         autoFiller.consumesPower = false;
-        autoFiller.outputsPower = true;
-        autoFiller.powerProduction = 100000f;
 
         autoFiller.buildType = () -> autoFiller.new OrangeAutoFillerBuild();
     }
