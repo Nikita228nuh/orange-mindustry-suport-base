@@ -12,21 +12,30 @@ public class OrangeUnits {
 
         // Basic stats
         orangeSupport.health = 300f;
-        orangeSupport.speed = 3.0f;
+        orangeSupport.speed = 1.2f;
         orangeSupport.hitSize = 8f;
 
-        // Make the unit fly
+        // Flying
         orangeSupport.flying = true;
+        orangeSupport.lowAltitude = false;
 
         // Building
         orangeSupport.buildSpeed = 1f;
         orangeSupport.buildRange = 120f;
 
         // Mining
-        orangeSupport.mineTier = 1;
-        orangeSupport.mineSpeed = 2f;
+        // High tier = can mine very hard ores.
+        orangeSupport.mineTier = 100;
+        orangeSupport.mineSpeed = 5f;
 
-        // Support/healing ability
+        // Allow mining from both floor and walls.
+        orangeSupport.mineFloor = true;
+        orangeSupport.mineWalls = true;
+
+        // Carry mined resources.
+        orangeSupport.itemCapacity = 100;
+
+        // Repair nearby friendly units/buildings.
         orangeSupport.abilities.add(
             new OrangeRepairFieldAbility(
                 20f,
