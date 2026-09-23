@@ -1,6 +1,5 @@
 package orangesupport;
 
-import mindustry.content.StatusEffects;
 import mindustry.type.UnitType;
 
 public class OrangeUnits {
@@ -12,27 +11,18 @@ public class OrangeUnits {
         orangeSupport = new UnitType("orange-support");
 
         // =========================
-        // MOVEMENT
+        // BASIC STATS
         // =========================
 
+        orangeSupport.health = 2000f;
+        orangeSupport.hitSize = 8f;
+
+        // Fast flying unit
         orangeSupport.flying = true;
-
-        // Very fast movement
-        orangeSupport.speed = 5.0f;
-
-        orangeSupport.accel = 1.0f;
-        orangeSupport.drag = 0.05f;
-
-        orangeSupport.rotateSpeed = 20f;
-        orangeSupport.baseRotateSpeed = 20f;
-
-        orangeSupport.hitSize = 16f;
-
-        // =========================
-        // HEALTH
-        // =========================
-
-        orangeSupport.health = 5000f;
+        orangeSupport.lowAltitude = false;
+        orangeSupport.speed = 2.0f;
+        orangeSupport.accel = 0.5f;
+        orangeSupport.drag = 0.1f;
 
         // =========================
         // BUILDING
@@ -45,13 +35,13 @@ public class OrangeUnits {
         // MINING
         // =========================
 
-        orangeSupport.mineSpeed = 10f;
         orangeSupport.mineTier = 100;
+        orangeSupport.mineSpeed = 10f;
 
-        orangeSupport.mineWalls = true;
         orangeSupport.mineFloor = true;
+        orangeSupport.mineWalls = true;
 
-        orangeSupport.itemCapacity = 9999;
+        orangeSupport.itemCapacity = 1000;
 
         // =========================
         // REPAIR FIELD
@@ -63,18 +53,7 @@ public class OrangeUnits {
                 200f
             )
         );
-
-        // =========================
-        // STRONG FORCE FIELD
-        // =========================
-
-        orangeSupport.abilities.add(
-            new OrangeForceFieldAbility(
-                100f,      // shield radius
-                20f,       // shield regeneration
-                2000f,     // maximum shield
-                60f * 2f   // cooldown: 2 seconds
-            )
-        );
+    }
+}
 
        
