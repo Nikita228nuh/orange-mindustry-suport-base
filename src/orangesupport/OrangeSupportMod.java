@@ -1,20 +1,22 @@
 package orangesupport;
 
 import arc.graphics.Color;
-import arc.struct.Seq;
+import arc.graphics.g2d.Drawf;
 import arc.math.geom.Rect;
+import arc.struct.Seq;
+import arc.util.Time;
 
 import mindustry.Vars;
+import mindustry.content.Category;
 import mindustry.content.Items;
 import mindustry.gen.Building;
 import mindustry.mod.Mod;
-import mindustry.type.Category;
 import mindustry.type.Item;
+import mindustry.type.ItemStack;
 import mindustry.type.Liquid;
 import mindustry.world.Block;
 import mindustry.world.meta.Stat;
 import mindustry.world.meta.StatUnit;
-import mindustry.graphics.Drawf;
 
 public class OrangeSupportMod extends Mod {
 
@@ -29,9 +31,8 @@ public class OrangeSupportMod extends Mod {
         autoFiller = new OrangeAutoFiller("orange-auto-filler");
 
         autoFiller.localizedName = "Orange Auto Filler";
-
         autoFiller.description =
-                "Automatically supplies nearby buildings with items, liquids and power.";
+                "Automatically supplies nearby buildings with accepted items, liquids and power.";
 
         autoFiller.size = 3;
 
@@ -49,8 +50,9 @@ public class OrangeSupportMod extends Mod {
         autoFiller.outputsPower = true;
 
         autoFiller.powerProduction = 100000f;
-    }
 
+        autoFiller.buildType = autoFiller::new OrangeAutoFillerBuild;
+    }
 
     public static class OrangeAutoFiller extends Block {
 
@@ -59,7 +61,6 @@ public class OrangeSupportMod extends Mod {
         public float powerProduction = 100000f;
 
         public OrangeAutoFiller(String name) {
-
             super(name);
 
             update = true;
@@ -76,7 +77,6 @@ public class OrangeSupportMod extends Mod {
             canOverdrive = false;
 
             size = 3;
-
             health = 1000000;
 
             requirements(
@@ -87,14 +87,10 @@ public class OrangeSupportMod extends Mod {
                             Items.silicon, 25
                     )
             );
-
-            buildType = OrangeAutoFillerBuild::new;
         }
-
 
         @Override
         public void setStats() {
-
             super.setStats();
 
             stats.add(
@@ -104,20 +100,16 @@ public class OrangeSupportMod extends Mod {
             );
         }
 
-
-        public class OrangeAutoFillerBuild extends Building {
+        public class OrangeAutoFillerBuild extends mindustry.gen.Building {
 
             private final Seq<Building> targets = new Seq<>();
 
             private int lastTileChanges = -1;
 
-
             @Override
             public void updateTile() {
 
-                if (Vars.world == null)
-                    return;
-
+                if (Vars.world == null) return;
 
                 if (lastTileChanges != Vars.world.tileChanges) {
 
@@ -132,7 +124,6 @@ public class OrangeSupportMod extends Mod {
                             range * 2f
                     );
 
-
                     Vars.indexer.eachBlock(
                             team,
                             rect,
@@ -141,187 +132,12 @@ public class OrangeSupportMod extends Mod {
                     );
                 }
 
-
-                if (!timer.get(0, 5f))
-                    return;
-
+                // Process every 5 ticks.
+                if (!timer.get(0, 5f)) return;
 
                 for (int i = 0; i < targets.size; i++) {
 
                     Building target = targets.get(i);
 
-                    if (target == null)
-                        continue;
-
-                    if (target.dead)
-                        continue;
-
-                    if (target.team != team)
-                        continue;
-
-
-                    fillItems(target);
-
-                    fillLiquids(target);
-
-                    givePower(target);
-                }
-            }
-
-
-            private void fillItems(Building target) {
-
-                if (!target.block.hasItems)
-                    return;
-
-                if (target.items == null)
-                    return;
-
-
-                for (Item item : Vars.content.items()) {
-
-                    if (!target.block.consumesItem(item))
-                        continue;
-
-
-                    float capacity = target.block.itemCapacity;
-
-
-                    try {
-
-                        capacity = target.getMaximumAccepted(item);
-
-                    } catch (Throwable ignored) {
-                    }
-
-
-                    if (capacity <= 0f)
-                        capacity = target.block.itemCapacity;
-
-
-                    float current = target.items.get(item);
-
-                    float amount = capacity - current;
-
-
-                    if (amount <= 0f)
-                        continue;
-
-
-                    amount = Math.min(amount, 1000f);
-
-
-                    target.items.add(
-                            item,
-                            (int)amount
-                    );
-                }
-            }
-
-
-            private void fillLiquids(Building target) {
-
-                if (!target.block.hasLiquids)
-                    return;
-
-                if (target.liquids == null)
-                    return;
-
-
-                for (Liquid liquid : Vars.content.liquids()) {
-
-                    boolean accepted;
-
-
-                    try {
-
-                        accepted =
-                                target.block.consumesLiquid(liquid);
-
-                    } catch (Throwable ignored) {
-
-                        accepted = false;
-                    }
-
-
-                    if (!accepted)
-                        continue;
-
-
-                    float current =
-                            target.liquids.get(liquid);
-
-
-                    float amount =
-                            target.block.liquidCapacity - current;
-
-
-                    if (amount <= 0.01f)
-                        continue;
-
-
-                    amount =
-                            Math.min(amount, 1000f);
-
-
-                    target.handleLiquid(
-                            this,
-                            liquid,
-                            amount
-                    );
-                }
-            }
-
-
-            private void givePower(Building target) {
-
-                if (!target.block.consumesPower)
-                    return;
-
-                if (target.power == null)
-                    return;
-
-
-                try {
-
-                    target.power.status = 1f;
-
-                    if (target.power.graph != null) {
-
-                        target.power.graph.transferPower(
-                                powerProduction
-                        );
-                    }
-
-                } catch (Throwable ignored) {
-                }
-            }
-
-
-            @Override
-            public void drawSelect() {
-
-                Drawf.dashSquare(
-                        Color.valueOf("ff8a00"),
-                        x,
-                        y,
-                        range * 2f
-                );
-            }
-
-
-            @Override
-            public void draw() {
-
-                super.draw();
-
-                Drawf.dashSquare(
-                        Color.valueOf("ff8a00"),
-                        x,
-                        y,
-                        range * 2f
-                );
-            }
-        }
-    }
-}
+                    if (target == null) continue;
+                    if (target.dead
