@@ -3,7 +3,9 @@ package orangesupport;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Fill;
+import arc.graphics.g2d.Lines;
 import arc.math.Mathf;
+
 import mindustry.entities.abilities.Ability;
 import mindustry.entities.abilities.ForceFieldAbility;
 import mindustry.gen.Unit;
@@ -28,21 +30,22 @@ public class OrangeForceFieldAbility extends ForceFieldAbility {
 
     @Override
     public void update(Unit unit) {
-        // Keep the shield effectively full.
-        // The normal ForceFieldAbility handles the actual shield behavior.
         super.update(unit);
     }
 
     @Override
     public void draw(Unit unit) {
+
         float r = radius * radiusScale;
 
-        if (r <= 0f) return;
+        if (r <= 0f)
+            return;
 
         float alpha = 0.16f + Mathf.absin(5f, 0.06f);
 
         Draw.z(110f);
 
+        // Orange transparent shield
         Draw.color(fieldColor, alpha);
 
         Fill.circle(
@@ -51,22 +54,23 @@ public class OrangeForceFieldAbility extends ForceFieldAbility {
                 r
         );
 
+        // Orange outline
         Draw.color(fieldColor, 0.75f);
 
-        // Outer ring
-        Draw.alpha(0.75f);
-        Draw.circle(
+        Lines.stroke(2f);
+
+        Lines.circle(
                 unit.x,
                 unit.y,
                 r
         );
 
-        Draw.alpha(1f);
         Draw.reset();
     }
 
     @Override
     public Ability copy() {
+
         OrangeForceFieldAbility ability =
                 new OrangeForceFieldAbility(
                         radius,
