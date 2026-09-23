@@ -1,6 +1,5 @@
 package orangesupport;
 
-import arc.Core;
 import arc.graphics.Color;
 import arc.math.geom.Rect;
 import arc.struct.Seq;
@@ -8,17 +7,16 @@ import arc.util.Time;
 
 import mindustry.Vars;
 import mindustry.content.Items;
-import mindustry.content.Liquids;
-import mindustry.gen.Building;
+import mindustry.graphics.Drawf;
 import mindustry.mod.Mod;
 import mindustry.type.Category;
 import mindustry.type.Item;
 import mindustry.type.ItemStack;
 import mindustry.type.Liquid;
+import mindustry.gen.Building;
 import mindustry.world.Block;
 import mindustry.world.meta.Stat;
 import mindustry.world.meta.StatUnit;
-import mindustry.graphics.Drawf;
 
 public class OrangeSupportMod extends Mod {
 
@@ -46,7 +44,7 @@ public class OrangeSupportMod extends Mod {
 
         autoFiller.range = 40f * Vars.tilesize;
 
-        autoFiller.health = 1000000f;
+        autoFiller.health = 100000;
 
         autoFiller.consumesPower = false;
         autoFiller.outputsPower = true;
@@ -77,7 +75,7 @@ public class OrangeSupportMod extends Mod {
             canOverdrive = false;
 
             size = 3;
-            health = 1000000f;
+            health = 100000;
 
             requirements(
                     Category.effect,
@@ -100,15 +98,9 @@ public class OrangeSupportMod extends Mod {
                     range / Vars.tilesize,
                     StatUnit.blocks
             );
-
-            stats.add(
-                    Stat.powerGeneration,
-                    powerProduction,
-                    StatUnit.powerSecond
-            );
         }
 
-        public class OrangeAutoFillerBuild extends mindustry.gen.Building {
+        public class OrangeAutoFillerBuild extends Building {
 
             private final Seq<Building> targets = new Seq<>();
 
@@ -117,9 +109,11 @@ public class OrangeSupportMod extends Mod {
             @Override
             public void updateTile() {
 
-                if (Vars.world == null) return;
+                if (Vars.world == null) {
+                    return;
+                }
 
-                // Rebuild nearby building list whenever the world changes.
+                // Rebuild the nearby building list whenever the world changes.
                 if (lastTileChanges != Vars.world.tileChanges) {
 
                     lastTileChanges = Vars.world.tileChanges;
@@ -142,15 +136,25 @@ public class OrangeSupportMod extends Mod {
                 }
 
                 // Process every 5 ticks.
-                if (!timer.get(0, 5f)) return;
+                if (!timer.get(0, 5f)) {
+                    return;
+                }
 
                 for (int i = 0; i < targets.size; i++) {
 
                     Building target = targets.get(i);
 
-                    if (target == null) continue;
-                    if (target.dead) continue;
-                    if (target.team != team) continue;
+                    if (target == null) {
+                        continue;
+                    }
+
+                    if (target.dead) {
+                        continue;
+                    }
+
+                    if (target.team != team) {
+                        continue;
+                    }
 
                     fillItems(target);
                     fillLiquids(target);
@@ -160,32 +164,40 @@ public class OrangeSupportMod extends Mod {
 
             private void fillItems(Building target) {
 
-                if (!target.block.hasItems) return;
-                if (target.items == null) return;
+                if (!target.block.hasItems) {
+                    return;
+                }
+
+                if (target.items == null) {
+                    return;
+                }
 
                 for (Item item : Vars.content.items()) {
 
-                    if (!target.block.consumesItem(item))
+                    if (!target.block.consumesItem(item)) {
                         continue;
+                    }
 
-                    float capacity = target.block.itemCapacity;
+                    int capacity = target.block.itemCapacity;
 
                     try {
                         capacity = target.getMaximumAccepted(item);
                     } catch (Throwable ignored) {
                     }
 
-                    if (capacity <= 0f) {
+                    if (capacity <= 0) {
                         capacity = target.block.itemCapacity;
                     }
 
-                    float current = target.items.get(item);
-                    float amount = capacity - current;
+                    int current = target.items.get(item);
 
-                    if (amount <= 0f)
+                    int amount = capacity - current;
+
+                    if (amount <= 0) {
                         continue;
+                    }
 
-                    amount = Math.min(amount, 1000f);
+                    amount = Math.min(amount, 1000);
 
                     target.items.add(item, amount);
                 }
@@ -193,8 +205,13 @@ public class OrangeSupportMod extends Mod {
 
             private void fillLiquids(Building target) {
 
-                if (!target.block.hasLiquids) return;
-                if (target.liquids == null) return;
+                if (!target.block.hasLiquids) {
+                    return;
+                }
+
+                if (target.liquids == null) {
+                    return;
+                }
 
                 for (Liquid liquid : Vars.content.liquids()) {
 
@@ -206,16 +223,18 @@ public class OrangeSupportMod extends Mod {
                         accepted = false;
                     }
 
-                    if (!accepted)
+                    if (!accepted) {
                         continue;
+                    }
 
                     float current = target.liquids.get(liquid);
 
                     float amount =
                             target.block.liquidCapacity - current;
 
-                    if (amount <= 0.01f)
+                    if (amount <= 0.01f) {
                         continue;
+                    }
 
                     amount = Math.min(amount, 1000f);
 
@@ -232,11 +251,13 @@ public class OrangeSupportMod extends Mod {
 
             private void givePower(Building target) {
 
-                if (!target.block.consumesPower)
+                if (!target.block.consumesPower) {
                     return;
+                }
 
-                if (target.power == null)
+                if (target.power == null) {
                     return;
+                }
 
                 try {
                     target.power.status = 1f;
