@@ -1,5 +1,6 @@
 package orangesupport;
 
+import mindustry.entities.abilities.Ability;
 import mindustry.entities.abilities.ForceFieldAbility;
 import mindustry.gen.Unit;
 
