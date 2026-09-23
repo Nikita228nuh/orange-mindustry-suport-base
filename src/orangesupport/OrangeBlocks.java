@@ -1,16 +1,16 @@
 package orangesupport;
 
-import mindustry.content.Blocks;
-import mindustry.world.blocks.storage.CoreBlock;
+import mindustry.world.Block;
+import mindustry.world.meta.BuildVisibility;
 
 public class OrangeBlocks {
 
-    public static CoreBlock orangeCore;
+    public static Block orangeCore;
 
     public static void load() {
         orangeCore = new OrangeCoreBlock("orange-core");
 
-        // Put the Orange Core in the same category as vanilla cores.
-        orangeCore.category = Blocks.coreShard.category;
+        // Make it appear in the build menu.
+        orangeCore.buildVisibility = BuildVisibility.shown;
     }
 }
