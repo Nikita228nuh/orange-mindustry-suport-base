@@ -11,19 +11,15 @@ public class OrangeCoreBlock extends CoreBlock {
         // 6x6 core
         size = 6;
 
-        // Core health
-        health = 5000;
-
-        // Large storage
+        // Core settings
+        health = 1000;
         itemCapacity = 1000000;
-
-        // Extra unit capacity
         unitCapModifier = 50;
 
-        // Free to place
+        // Free to build
         requirements = ItemStack.empty;
 
-        // Units produced/spawned by this core
+        // This core produces the Orange Support unit.
         unitType = OrangeUnits.orangeSupport;
     }
 }
