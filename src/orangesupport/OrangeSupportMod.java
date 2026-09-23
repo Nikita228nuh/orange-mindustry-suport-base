@@ -9,8 +9,8 @@ public class OrangeSupportMod extends Mod {
 
     @Override
     public void loadContent() {
-        // Orange Auto Filler removed.
-        // No custom blocks, item transfer, liquid transfer,
-        // power transfer, or turret interaction.
+        OrangeUnits.load();
+        OrangeBlocks.load();
+        OrangeTechTree.load();
     }
 }
