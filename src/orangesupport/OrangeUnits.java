@@ -10,50 +10,70 @@ public class OrangeUnits {
 
         orangeSupport = new UnitType("orange-support");
 
-        // =========================
-        // BASIC STATS
-        // =========================
+        // ========================================
+        // HEALTH
+        // ========================================
 
-        orangeSupport.health = 2000f;
-        orangeSupport.hitSize = 8f;
+        orangeSupport.health = 10000f;
+        orangeSupport.hitSize = 16f;
 
-        // Fast flying unit
+        // ========================================
+        // MOVEMENT
+        // ========================================
+
         orangeSupport.flying = true;
         orangeSupport.lowAltitude = false;
-        orangeSupport.speed = 2.0f;
-        orangeSupport.accel = 0.5f;
-        orangeSupport.drag = 0.1f;
 
-        // =========================
+        // Very fast movement.
+        orangeSupport.speed = 8.0f;
+        orangeSupport.accel = 1.0f;
+        orangeSupport.drag = 0.05f;
+
+        // ========================================
         // BUILDING
-        // =========================
+        // ========================================
 
+        // Extremely fast construction.
         orangeSupport.buildSpeed = 120f;
         orangeSupport.buildRange = 300f;
 
-        // =========================
+        // ========================================
         // MINING
-        // =========================
+        // ========================================
 
+        // Extremely high mining tier.
         orangeSupport.mineTier = 100;
-        orangeSupport.mineSpeed = 10f;
+        orangeSupport.mineSpeed = 20f;
 
+        // Mine floor and wall resources.
         orangeSupport.mineFloor = true;
         orangeSupport.mineWalls = true;
 
-        orangeSupport.itemCapacity = 1000;
+        // Large inventory.
+        orangeSupport.itemCapacity = 9999;
 
-        // =========================
+        // ========================================
         // REPAIR FIELD
-        // =========================
+        // ========================================
 
         orangeSupport.abilities.add(
             new OrangeRepairFieldAbility(
                 100f,
-                200f
+                300f
+            )
+        );
+
+        // ========================================
+        // FORCE FIELD
+        // ========================================
+
+        orangeSupport.abilities.add(
+            new OrangeForceFieldAbility(
+                200f,       // field radius
+                1000f,      // shield regeneration
+                100000f,    // maximum shield
+                1f          // cooldown
             )
         );
     }
 }
-
-       
