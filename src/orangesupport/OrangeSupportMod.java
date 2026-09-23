@@ -8,5 +8,6 @@ public class OrangeSupportMod extends Mod {
     public void loadContent() {
         OrangeUnits.load();
         OrangeBlocks.load();
+        OrangeTechTree.load();
     }
 }
