@@ -12,7 +12,7 @@ public class OrangeCoreBlock extends CoreBlock {
         size = 6;
 
         // Core settings
-        health = 1000;
+        health = 10000;
         itemCapacity = 1000000;
         unitCapModifier = 50;
 
