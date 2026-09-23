@@ -50,8 +50,6 @@ public class OrangeSupportMod extends Mod {
         autoFiller.outputsPower = true;
 
         autoFiller.powerProduction = 100000f;
-
-        autoFiller.buildType = autoFiller::new OrangeAutoFillerBuild;
     }
 
     public static class OrangeAutoFiller extends Block {
@@ -87,6 +85,9 @@ public class OrangeSupportMod extends Mod {
                             Items.silicon, 25
                     )
             );
+
+            // Correct Mindustry building provider.
+            buildType = OrangeAutoFillerBuild::new;
         }
 
         @Override
@@ -109,8 +110,10 @@ public class OrangeSupportMod extends Mod {
             @Override
             public void updateTile() {
 
-                if (Vars.world == null) return;
+                if (Vars.world == null)
+                    return;
 
+                // Rebuild the nearby building list when the world changes.
                 if (lastTileChanges != Vars.world.tileChanges) {
 
                     lastTileChanges = Vars.world.tileChanges;
@@ -133,11 +136,150 @@ public class OrangeSupportMod extends Mod {
                 }
 
                 // Process every 5 ticks.
-                if (!timer.get(0, 5f)) return;
+                if (!timer.get(0, 5f))
+                    return;
 
                 for (int i = 0; i < targets.size; i++) {
 
                     Building target = targets.get(i);
 
-                    if (target == null) continue;
-                    if (target.dead
+                    if (target == null)
+                        continue;
+
+                    if (target.dead)
+                        continue;
+
+                    if (target.team != team)
+                        continue;
+
+                    fillItems(target);
+                    fillLiquids(target);
+                    givePower(target);
+                }
+            }
+
+            private void fillItems(Building target) {
+
+                if (!target.block.hasItems)
+                    return;
+
+                if (target.items == null)
+                    return;
+
+                for (Item item : Vars.content.items()) {
+
+                    if (!target.block.consumesItem(item))
+                        continue;
+
+                    int capacity = target.block.itemCapacity;
+
+                    try {
+                        capacity = target.getMaximumAccepted(item);
+                    } catch (Throwable ignored) {
+                    }
+
+                    if (capacity <= 0)
+                        capacity = target.block.itemCapacity;
+
+                    int current = target.items.get(item);
+
+                    int amount = capacity - current;
+
+                    if (amount <= 0)
+                        continue;
+
+                    // Give up to 1000 items per cycle.
+                    amount = Math.min(amount, 1000);
+
+                    target.items.add(item, amount);
+                }
+            }
+
+            private void fillLiquids(Building target) {
+
+                if (!target.block.hasLiquids)
+                    return;
+
+                if (target.liquids == null)
+                    return;
+
+                for (Liquid liquid : Vars.content.liquids()) {
+
+                    boolean accepted;
+
+                    try {
+                        accepted = target.block.consumesLiquid(liquid);
+                    } catch (Throwable ignored) {
+                        accepted = false;
+                    }
+
+                    if (!accepted)
+                        continue;
+
+                    float current = target.liquids.get(liquid);
+
+                    float amount =
+                            target.block.liquidCapacity - current;
+
+                    if (amount <= 0.01f)
+                        continue;
+
+                    // Give up to 1000 liquid per cycle.
+                    amount = Math.min(amount, 1000f);
+
+                    target.handleLiquid(
+                            this,
+                            liquid,
+                            amount
+                    );
+                }
+            }
+
+            private void givePower(Building target) {
+
+                if (!target.block.consumesPower)
+                    return;
+
+                if (target.power == null)
+                    return;
+
+                try {
+
+                    target.power.status = 1f;
+
+                    target.power.graph.transferPower(
+                            powerProduction * Time.delta
+                    );
+
+                } catch (Throwable ignored) {
+                }
+            }
+
+            @Override
+            public void drawSelect() {
+
+                super.drawSelect();
+
+                Drawf.dashSquare(
+                        Color.valueOf("ff8a00"),
+                        x,
+                        y,
+                        range * 2f
+                );
+            }
+
+            @Override
+            public void draw() {
+
+                super.draw();
+
+                Drawf.dashSquare(
+                        Color.valueOf("ff8a00"),
+                        x,
+                        y,
+                        range * 2f
+                );
+            }
+        }
+    }
+}
